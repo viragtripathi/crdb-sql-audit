@@ -16,6 +16,17 @@ A powerful CLI tool to extract, deduplicate, and analyze PostgreSQL SQL logs for
   - `.html`: Interactive browser report with sorting/filtering
   - `.png`: Visual bar chart of issues
 
+## 🖼 Sample Output
+
+| Report Type | Preview                                           |
+|-------------|---------------------------------------------------|
+| 🌐 HTML     | ![HTML Report Screenshot](docs/sample_report.png) |
+| 📊 Chart    | ![Bar Chart](docs/sample_chart.png)               |
+| 📋 CSV      | ![CSV Snippet](docs/sample_csv.png)               |
+| 💾 SQL      | ![SQL Snippet](docs/sample_sql.png)               |
+| 📝 Markdown | ![Markdown Snippet](docs/sample_md.png)           |
+
+
 ## 📦 Installation
 
 ### Option A: Local Dev Install

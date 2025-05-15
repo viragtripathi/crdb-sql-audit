@@ -70,10 +70,12 @@ def generate_reports(seen_sql, issues, output_prefix):
     shutil.copyfile(logo_src, logo_dst)
 
     # Markdown
+    issue_pct = (len(issues) / len(seen_sql)) * 100 if seen_sql else 0
     with open(f"{output_prefix}.md", "w", encoding="utf-8") as f:
         f.write("# CockroachDB SQL Compatibility Report\n\n")
         f.write(f"**Total unique SQL/function statements analyzed:** {len(seen_sql)}  \n")
-        f.write(f"**Total compatibility issues detected:** {len(issues)}\n\n")
+        f.write(f"**Total compatibility issues detected:** {len(issues)}\n")
+        f.write(f"**Issue rate:** {issue_pct:.2f}%\n\n")
         f.write("## Compatibility Issues Summary\n\n")
         f.write("| SQL Type | Issue | Count |\n|----------|-------|-------|\n")
         for _, row in summary.iterrows():
@@ -147,7 +149,7 @@ pre {
   <h1>CockroachDB SQL Compatibility Report</h1>
 </header>
 """ +
-                f"<p><strong>Total SQL/function statements:</strong> {len(seen_sql)}<br><strong>Total issues:</strong> {len(issues)}</p>"
+                f"<p><strong>Total SQL/function statements:</strong> {len(seen_sql)}<br><strong>Total issues:</strong> {len(issues)}<br><strong>Issue rate:</strong> {issue_pct:.2f}%</p>"
                 )
         f.write(summary.to_html(index=False))
         f.write("<h2>Sample Issues</h2>")
