@@ -18,3 +18,6 @@ dependencies = [
 
 [project.scripts]
 crdb-sql-audit = "crdb_sql_audit.main:main"
+
+[tool.setuptools.package-data]
+crdb_sql_audit = ["roach-logo.svg"]

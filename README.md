@@ -51,6 +51,27 @@ output/
 ├── report_chart.png    # Visual chart of issues
 ```
 
+## 🧹 Preparing Your Log Files
+
+To analyze PostgreSQL SQL logs effectively, we recommend the following preprocessing steps:
+
+### 1. Extract SQL-related Lines
+```bash
+grep "execute" xxxxx_full_pglog.log > sql_only.log
+# or to include pg_ built-in function usage:
+grep -E "execute|pg_" xxxxx_full_pglog.log > sql_only.log
+```
+
+### 2. Split Into Manageable Chunks (Optional but Recommended)
+```bash
+split -b 50M sql_only.log chunks/sql_chunk_
+```
+
+### 3. Run the Audit
+```bash
+crdb-sql-audit --dir chunks --terms execute,pg_ --out output/report
+```
+
 ## 🛠 Example
 Analyze all logs in a folder:
 ```bash
