@@ -20,7 +20,7 @@ A powerful CLI tool to extract, deduplicate, and analyze PostgreSQL SQL logs for
 
 ### Option A: Local Dev Install
 ```bash
-git clone https://github.com/your-org/crdb-sql-audit.git
+git clone https://github.com/viragtripathi/crdb-sql-audit.git
 cd crdb-sql-audit
 python -m venv venv
 source venv/bin/activate
