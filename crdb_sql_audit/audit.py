@@ -51,6 +51,11 @@ def generate_reports(seen_sql, issues, output_prefix):
             out.write(sql + "\n")
 
     df = pd.DataFrame(issues)
+
+    # Rule-level summary
+    rule_summary = df.groupby("Rule_ID").size().reset_index(name="Matches")
+    rule_summary["% of Total"] = (rule_summary["Matches"] / len(seen_sql)) * 100
+
     if df.empty or not {'SQL_Type', 'Issue'}.issubset(df.columns):
         logging.warning("⚠️ No compatibility issues found or rules failed to match.")
         return
@@ -70,7 +75,11 @@ def generate_reports(seen_sql, issues, output_prefix):
         f.write(f"**Total unique SQL/function statements analyzed:** {len(seen_sql)}  \n")
         f.write(f"**Total compatibility issues detected:** {len(issues)}\n")
         f.write(f"**Issue rate:** {issue_pct:.2f}%\n\n")
-        f.write("## Compatibility Issues Summary\n\n")
+        f.write("## Rule Match Summary\n\n")
+        f.write("| Rule ID | Matches | % of Total |\n|---------|---------|-------------|\n")
+        for _, row in rule_summary.iterrows():
+            f.write(f"| {row['Rule_ID']} | {row['Matches']} | {row['% of Total']:.2f}% |\n")
+        f.write("\n## Compatibility Issues Summary\n\n")
         f.write("| SQL Type | Issue | Count |\n|----------|-------|-------|\n")
         for _, row in summary.iterrows():
             f.write(f"| {row['SQL_Type']} | {row['Issue']} | {row['Count']} |\n")
@@ -146,6 +155,8 @@ pre {
                 f"<p><strong>Total SQL/function statements:</strong> {len(seen_sql)}<br><strong>Total issues:</strong> {len(issues)}<br><strong>Issue rate:</strong> {issue_pct:.2f}%</p>"
                 )
         f.write(summary.to_html(index=False))
+        f.write("<h2>Rule Match Summary</h2>")
+        f.write(rule_summary.to_html(index=False))
         f.write("<h2>Sample Issues</h2>")
         for i, row in enumerate(issues[:10]):
             f.write(f"<h3>{i+1}. {row['SQL_Type']}: {row['Issue']}</h3><pre>{row['Example']}</pre>")
