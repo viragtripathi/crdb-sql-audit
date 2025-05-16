@@ -159,3 +159,14 @@ pattern = re.compile(r'^.*\bpg_\w+\s*\(.*$', re.IGNORECASE)
 sql = "SELECT pg_backend_pid()"
 print(bool(pattern.search(sql)))  # ✅ True
 ```
+
+### 🛠 Validate with Shell
+You can use basic Unix commands to check for patterns like pg_ functions directly in your log chunks:
+
+
+| Task                               | Command                                                                   |
+|------------------------------------|---------------------------------------------------------------------------|
+| Total matches across chunks        | `grep -oE '\bpg_[a-zA-Z0-9_]+\(' chunks/* \| wc -l`                       |
+| Unique function names              | `grep -oE '\bpg_[a-zA-Z0-9_]+\(' chunks/* \| sort \| uniq`                |
+| Count occurrences of each function | `grep -oE '\bpg_[a-zA-Z0-9_]+\(' chunks/* \| sort \| uniq -c \| sort -nr` |
+| Full SQL lines containing pg\_\*   | `grep -E '\bpg_[a-zA-Z0-9_]+\(' chunks/*`                                 |
