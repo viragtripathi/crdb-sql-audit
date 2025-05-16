@@ -17,18 +17,6 @@ dependencies = [
     "matplotlib",
     "pyyaml"
 ]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Topic :: Software Development :: Quality Assurance",
-    "Operating System :: OS Independent"
-]
 
 [project.scripts]
 crdb-sql-audit = "crdb_sql_audit.main:main"
