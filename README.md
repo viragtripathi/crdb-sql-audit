@@ -2,8 +2,6 @@
 [![Python version](https://img.shields.io/pypi/pyversions/crdb-sql-audit)](https://pypi.org/project/crdb-sql-audit/)
 [![License](https://img.shields.io/pypi/l/crdb-sql-audit)](https://pypi.org/project/crdb-sql-audit/)
 
-[![Downloads](https://static.pepy.tech/personalized-badge/crdb-sql-audit?period=total&units=international_system&left_color=grey&right_color=blue&left_text=Downloads)](https://pepy.tech/project/crdb-sql-audit)
-
 # crdb-sql-audit
 
 A powerful CLI tool to extract, deduplicate, and analyze SQL logs for **CockroachDB compatibility** using a flexible, rule-based engine.
