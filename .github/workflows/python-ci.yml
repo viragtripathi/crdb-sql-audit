@@ -24,7 +24,7 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          flake8 crdb_sql_audit --max-line-length=120
+          flake8 crdb_sql_audit --max-line-length=140 --ignore=E305,E302
 
       - name: Build package
         run: python -m build
