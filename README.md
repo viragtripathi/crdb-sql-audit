@@ -112,6 +112,7 @@ crdb-sql-audit --dir chunks --terms execute,pg_ --out output/report
 ## 📚 Rule Engine Format
 
 Rules are written in YAML and matched against each SQL line. Example:
+> 💡 This is also the default rule if you don't provide `--rules` param.
 
 ```yaml
 - id: malformed_dml_statements
@@ -121,8 +122,8 @@ Rules are written in YAML and matched against each SQL line. Example:
   tags: [syntax]
 
 - id: special_char_in_identifier
-  match: '"[^"]+#NAU"'
-  message: "Table name contains unsupported special character (#NAU)"
+  match: '"[^"]*#\w*"'
+  message: "Table name contains unsupported special character (#)"
   level: error
   tags: [table, identifier]
 
@@ -132,11 +133,11 @@ Rules are written in YAML and matched against each SQL line. Example:
   level: error
   tags: [function]
 
-- id: low_token_sql
-  match: '^(\S+\s*){1,2}$'
-  message: "Extremely short SQL likely malformed"
-  level: warning
-  tags: [syntax]
+#- id: low_token_sql
+  #match: '^(\S+\s*){1,2}$'
+  #message: "Extremely short SQL likely malformed"
+  #level: warning
+  #tags: [syntax]
 ```
 
 > 📦 Multiple rule sets can be created to target different SQL dialects (e.g., `postgres_to_crdb.yaml`, `mysql_to_crdb.yaml`, etc.)

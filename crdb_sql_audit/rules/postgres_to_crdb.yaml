@@ -5,8 +5,8 @@
   tags: [syntax]
 
 - id: special_char_in_identifier
-  match: '"[^"]+#NAU"'
-  message: "Table name contains unsupported special character (#NAU)"
+  match: '"[^"]*#\w*"'
+  message: "Table name contains unsupported special character (#)"
   level: error
   tags: [table, identifier]
 
