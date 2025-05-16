@@ -1,9 +1,12 @@
 import os
 import re
 import shutil
+import logging
 import importlib.resources as pkg_resources
 import pandas as pd
 import matplotlib.pyplot as plt
+
+from .rules_engine import load_rules, apply_rules
 
 def extract_sql(logs_dir, search_terms):
     seen_sql = set()
@@ -23,36 +26,22 @@ def extract_sql(logs_dir, search_terms):
                                 seen_sql.add(func.strip())
     return seen_sql
 
-def analyze_compatibility(seen_sql):
-    issues = []
+
+def analyze_compatibility(seen_sql, rules_path=None):
+    rules = load_rules(rules_path)
+    logging.info(f"📊 Loaded {len(rules)} rules")
+
+    all_issues = []
     for sql in seen_sql:
-        if re.search(r'\bpg_\w+\s*\(', sql):
-            issues.append({
-                "SQL_Type": "FUNCTION",
-                "Issue": "PostgreSQL pg_* function not supported in CockroachDB",
-                "Example": sql
-            })
-            continue
+        matches = apply_rules(sql, rules)
+        if matches:
+            logging.info(f"⚠️ MATCHED: {sql}")
+            for m in matches:
+                logging.info(f"   🔸 Rule: {m['Rule_ID']} — {m['Issue']}")
+        all_issues.extend(matches)  # ✅ move this inside the loop
 
-        stmt_type_match = re.match(r'^\b(SELECT|INSERT|UPDATE|DELETE|BEGIN|COMMIT|ROLLBACK|SAVEPOINT)\b', sql, re.IGNORECASE)
-        if not stmt_type_match:
-            continue
-        sql_type = stmt_type_match.group(1).upper()
-        issue = ""
+    return all_issues
 
-        match = re.search(r'FROM\s+"?([\w#]+)"?', sql, re.IGNORECASE) or \
-                re.search(r'INTO\s+"?([\w#]+)"?', sql, re.IGNORECASE) or \
-                re.search(r'UPDATE\s+"?([\w#]+)"?', sql, re.IGNORECASE)
-
-        if match and "#" in match.group(1):
-            issue = "Table name contains unsupported special character (#)"
-        elif sql_type in ["DELETE", "SELECT", "INSERT", "UPDATE"] and len(sql.split()) <= 2:
-            issue = "Possibly malformed or incomplete SQL statement"
-
-        if issue:
-            issues.append({"SQL_Type": sql_type, "Issue": issue, "Example": sql})
-
-    return issues
 
 def generate_reports(seen_sql, issues, output_prefix):
     os.makedirs(os.path.dirname(output_prefix), exist_ok=True)
@@ -60,6 +49,11 @@ def generate_reports(seen_sql, issues, output_prefix):
     with open(f"{output_prefix}.sql", "w", encoding="utf-8") as out:
         for sql in sorted(seen_sql):
             out.write(sql + "\n")
+
+    df = pd.DataFrame(issues)
+    if df.empty or not {'SQL_Type', 'Issue'}.issubset(df.columns):
+        logging.warning("⚠️ No compatibility issues found or rules failed to match.")
+        return
 
     pd.DataFrame(issues).to_csv(f"{output_prefix}.csv", index=False)
     summary = pd.DataFrame(issues).groupby(['SQL_Type', 'Issue']).size().reset_index(name='Count')

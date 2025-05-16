@@ -1,0 +1,23 @@
+- id: malformed_dml_statements
+  match: '^(SELECT|INSERT|UPDATE|DELETE FROM)\s*$'
+  message: "Possibly malformed or incomplete SQL statement"
+  level: warning
+  tags: [syntax]
+
+- id: special_char_in_identifier
+  match: '"[^"]+#NAU"'
+  message: "Table name contains unsupported special character (#NAU)"
+  level: error
+  tags: [table, identifier]
+
+- id: pg_builtins
+  match: '^.*\bpg_\w+\s*\(.*$'
+  message: "PostgreSQL pg_* function not supported in CockroachDB"
+  level: error
+  tags: [function]
+
+#- id: low_token_sql
+  #match: '^(\S+\s*){1,2}$'
+  #message: "Extremely short SQL likely malformed"
+  #level: warning
+  #tags: [syntax]

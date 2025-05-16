@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crdb-sql-audit"
-version = "0.1.0"
+version = "0.2.0"
 description = "Analyze PostgreSQL SQL logs for CockroachDB compatibility"
 authors = [
     { name = "Virag Tripathi", email = "virag.tripathi@gmail.com" }
@@ -13,11 +13,15 @@ readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
     "pandas",
-    "matplotlib"
+    "matplotlib",
+    "pyyaml"
 ]
 
 [project.scripts]
 crdb-sql-audit = "crdb_sql_audit.main:main"
 
+[tool.setuptools]
+packages = ["crdb_sql_audit"]
+
 [tool.setuptools.package-data]
-crdb_sql_audit = ["roach-logo.svg"]
+crdb_sql_audit = ["rules/postgres_to_crdb.yaml", "roach-logo.svg"]
