@@ -220,3 +220,6 @@ python tests/test_runner.py
 
 ✅ This runs automatically in GitHub Actions on every commit to `main`.
 
+---
+
+📓 [Try it in a Jupyter notebook](https://raw.githubusercontent.com/viragtripathi/crdb-sql-audit/main/notebooks/demo_crdb_sql_audit.ipynb)
