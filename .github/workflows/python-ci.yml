@@ -29,6 +29,10 @@ jobs:
       - name: Build package
         run: python -m build
 
+      - name: Install project
+        run: |
+          pip install .
+
       - name: Run test suite
         run: |
           python tests/test_runner.py
