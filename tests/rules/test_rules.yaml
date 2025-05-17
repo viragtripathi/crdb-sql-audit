@@ -1,0 +1,17 @@
+- id: malformed_dml
+  match: '^(SELECT|DELETE FROM)\s*$'
+  message: "Too short"
+  level: warning
+  tags: [syntax]
+
+- id: hash_table
+  match: '"[^"]*#\w*"'
+  message: "Has # in table name"
+  level: error
+  tags: [identifier]
+
+- id: pg_func
+  match: '^.*\bpg_\w+\s*\(.*$'
+  message: "PostgreSQL built-in function"
+  level: error
+  tags: [function]

@@ -1,0 +1,4 @@
+2025-05-15 12:00:00 CEST [123456]: [1-1] user=testusr,db=testdb LOG:  execute <unnamed>: SELECT * FROM "ACCOUNTS#NAU"
+2025-05-15 12:00:01 CEST [123456]: [2-1] user=testusr,db=testdb LOG:  execute <unnamed>: DELETE FROM
+2025-05-15 12:00:02 CEST [123456]: [3-1] user=testusr,db=testdb LOG:  execute <unnamed>: SELECT pg_backend_pid()
+2025-05-15 12:00:03 CEST [123456]: [4-1] user=testusr,db=testdb LOG:  execute <unnamed>: SELECT

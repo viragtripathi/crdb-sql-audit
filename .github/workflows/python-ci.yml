@@ -28,3 +28,7 @@ jobs:
 
       - name: Build package
         run: python -m build
+
+      - name: Run test suite
+        run: |
+          python tests/test_runner.py

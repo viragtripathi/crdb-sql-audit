@@ -1,6 +1,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/crdb-sql-audit)](https://pypi.org/project/crdb-sql-audit/)
 [![Python version](https://img.shields.io/pypi/pyversions/crdb-sql-audit)](https://pypi.org/project/crdb-sql-audit/)
 [![License](https://img.shields.io/pypi/l/crdb-sql-audit)](https://pypi.org/project/crdb-sql-audit/)
+[![Build status](https://github.com/viragtripathi/crdb-sql-audit/actions/workflows/python-ci.yml/badge.svg)](https://github.com/viragtripathi/crdb-sql-audit/actions)
 
 # crdb-sql-audit
 
@@ -169,3 +170,25 @@ You can use basic Unix commands to check for patterns like pg_ functions directl
 | Unique function names              | `grep -oE '\bpg_[a-zA-Z0-9_]+\(' chunks/* \| sort \| uniq`                |
 | Count occurrences of each function | `grep -oE '\bpg_[a-zA-Z0-9_]+\(' chunks/* \| sort \| uniq -c \| sort -nr` |
 | Full SQL lines containing pg\_\*   | `grep -E '\bpg_[a-zA-Z0-9_]+\(' chunks/*`                                 |
+
+
+---
+
+## 🧪 Running Tests
+
+This project includes a test suite using sample logs and rules to validate behavior.
+
+### 🔧 To run locally:
+
+```bash
+python tests/test_runner.py
+```
+
+### 🧪 What it does:
+
+* Runs `crdb-sql-audit` on a small sample of PostgreSQL-style logs
+* Uses `tests/rules/test_rules.yaml`
+* Verifies that a CSV report is created with expected issues
+
+✅ This runs automatically in GitHub Actions on every commit to `main`.
+
