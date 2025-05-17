@@ -222,4 +222,4 @@ python tests/test_runner.py
 
 ---
 
-📓 [Try it in a Jupyter notebook](https://raw.githubusercontent.com/viragtripathi/crdb-sql-audit/main/notebooks/demo_crdb_sql_audit.ipynb)
+📓 [Try it in a Jupyter notebook](notebooks/demo_crdb_sql_audit.ipynb)
