@@ -1,3 +1,4 @@
 pandas
 matplotlib
 pyyaml
+crdb-sql-audit
