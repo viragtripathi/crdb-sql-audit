@@ -2,7 +2,7 @@
 [![Python version](https://img.shields.io/pypi/pyversions/crdb-sql-audit)](https://pypi.org/project/crdb-sql-audit/)
 [![License](https://img.shields.io/pypi/l/crdb-sql-audit)](https://pypi.org/project/crdb-sql-audit/)
 [![Build status](https://github.com/viragtripathi/crdb-sql-audit/actions/workflows/python-ci.yml/badge.svg)](https://github.com/viragtripathi/crdb-sql-audit/actions)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/viragtripathi/crdb-sql-audit/HEAD?filepath=notebooks%2Fdemo_crdb_sql_audit.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/viragtripathi/crdb-sql-audit/HEAD?filepath=notebooks%2Fdemo_crdb_sql_audit_binder.ipynb)
 
 # crdb-sql-audit
 
@@ -223,4 +223,4 @@ python tests/test_runner.py
 
 ---
 
-📓 [Try it in a Jupyter notebook](notebooks/demo_crdb_sql_audit.ipynb)
+📓 [Try it in a Jupyter notebook](notebooks/demo_crdb_sql_audit_binder.ipynb)
