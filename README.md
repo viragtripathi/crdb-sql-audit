@@ -26,13 +26,13 @@ A powerful CLI tool to extract, deduplicate, and analyze SQL logs for **Cockroac
 
 ## 🖼 Sample Output
 
-| Report Type | Preview                                           |
-|-------------|---------------------------------------------------|
-| HTML        | ![HTML Report Screenshot](docs/sample_report.png) |
-| Chart       | ![Bar Chart](docs/sample_chart.png)               |
-| CSV         | ![CSV Snippet](docs/sample_csv.png)               |
-| SQL         | ![SQL Snippet](docs/sample_sql.png)               |
-| Markdown    | ![Markdown Snippet](docs/sample_md.png)           |
+| Report Type | Preview                                                                                                               |
+|-------------|-----------------------------------------------------------------------------------------------------------------------|
+| HTML        | ![HTML Report Screenshot](https://raw.githubusercontent.com/viragtripathi/crdb-sql-audit/main/docs/sample_report.png) |
+| Chart       | ![Bar Chart](https://raw.githubusercontent.com/viragtripathi/crdb-sql-audit/main/docs/sample_chart.png)               |
+| CSV         | ![CSV Snippet](https://raw.githubusercontent.com/viragtripathi/crdb-sql-audit/main/docs/sample_csv.png)               |
+| SQL         | ![SQL Snippet](https://raw.githubusercontent.com/viragtripathi/crdb-sql-audit/main/docs/sample_sql.png)               |
+| Markdown    | ![Markdown Snippet](https://raw.githubusercontent.com/viragtripathi/crdb-sql-audit/main/docs/sample_md.png)           |
 
 
 ## 📦 Installation
@@ -53,6 +53,7 @@ pip install dist/crdb_sql_audit-0.2.0-py3-none-any.whl
 ```
 
 ## 🧪 Usage
+
 ```bash
 crdb-sql-audit \
   --dir /path/to/logs \
@@ -60,14 +61,41 @@ crdb-sql-audit \
   --out output/report
 ```
 
-### Additional Options
+You can also analyze a single file:
+
 ```bash
---rules    Path to YAML rules file (optional, default: built-in PostgreSQL rules)
---help     Show usage help
---version  Show current version
+crdb-sql-audit \
+  --file /path/to/logfile.log \
+  --terms SELECT,INSERT \
+  --raw \
+  --out output/single_file_report
 ```
 
+> ⚠️ You must provide either `--dir` or `--file`, but not both.
+
+### 🔧 Additional Options
+
+```bash
+--dir       Directory containing SQL log files (mutually exclusive with --file)
+--file      Single SQL log file (mutually exclusive with --dir)
+--terms     Comma-separated search keywords to extract SQL (default: 'execute,pg_')
+--raw       Treat each matching line as a raw SQL statement (default: False)
+--rules     Path to YAML rules file (optional, default: built-in PostgreSQL rules)
+--out       Output file prefix (default: crdb_audit_output/report)
+--help      Show usage help
+--version   Show current version
+```
+
+### 📘 CLI Help Example
+
+```bash
+crdb-sql-audit --help
+```
+
+![CLI help screenshot](https://raw.githubusercontent.com/viragtripathi/crdb-sql-audit/main/docs/cli_help.png)
+
 ### Custom Rules Example
+
 ```bash
 crdb-sql-audit \
   --dir ./logs \

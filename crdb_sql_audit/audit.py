@@ -8,22 +8,34 @@ import matplotlib.pyplot as plt
 
 from .rules_engine import load_rules, apply_rules
 
-def extract_sql(logs_dir, search_terms):
+def extract_sql(logs_path, search_terms, raw_mode=False):
     seen_sql = set()
-    for filename in os.listdir(logs_dir):
-        path = os.path.join(logs_dir, filename)
+
+    if os.path.isfile(logs_path):
+        paths = [logs_path]
+    elif os.path.isdir(logs_path):
+        paths = [os.path.join(logs_path, f) for f in os.listdir(logs_path)]
+    else:
+        raise ValueError(f"The path '{logs_path}' is not a valid file or directory.")
+
+    for path in paths:
         if os.path.isfile(path):
             with open(path, "r", encoding="utf-8", errors="ignore") as f:
                 for line in f:
                     if any(term in line for term in search_terms):
-                        match = re.search(r'execute [^:]+: (.+)', line)
-                        if match:
-                            sql = match.group(1).strip()
-                            seen_sql.add(sql)
+                        if raw_mode:
+                            sql = line.strip()
+                            if len(sql) > 5:
+                                seen_sql.add(sql)
                         else:
-                            func_match = re.findall(r'\b(pg_\w+\s*\(.*?\))', line)
-                            for func in func_match:
-                                seen_sql.add(func.strip())
+                            match = re.search(r'execute [^:]+: (.+)', line)
+                            if match:
+                                sql = match.group(1).strip()
+                                seen_sql.add(sql)
+                            else:
+                                func_match = re.findall(r'\b(pg_\w+\s*\(.*?\))', line)
+                                for func in func_match:
+                                    seen_sql.add(func.strip())
     return seen_sql
 
 
@@ -38,7 +50,7 @@ def analyze_compatibility(seen_sql, rules_path=None):
             logging.info(f"⚠️ MATCHED: {sql}")
             for m in matches:
                 logging.info(f"   🔸 Rule: {m['Rule_ID']} — {m['Issue']}")
-        all_issues.extend(matches)  # ✅ move this inside the loop
+        all_issues.extend(matches)
 
     return all_issues
 
