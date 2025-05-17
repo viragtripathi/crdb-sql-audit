@@ -1,3 +1,5 @@
+# postgres_to_crdb.yaml — Comprehensive CRDB Compatibility Rules based on https://www.cockroachlabs.com/docs/v25.2/sql-feature-support
+
 - id: malformed_dml_statements
   match: '^(SELECT|INSERT|UPDATE|DELETE FROM)\s*$'
   message: "Possibly malformed or incomplete SQL statement"
@@ -5,7 +7,7 @@
   tags: [syntax]
 
 - id: special_char_in_identifier
-  match: '"[^"]*#\w*"'
+  match: '"[^\"]*#\w*"'
   message: "Table name contains unsupported special character (#)"
   level: error
   tags: [table, identifier]
@@ -16,8 +18,62 @@
   level: error
   tags: [function]
 
-#- id: low_token_sql
-  #match: '^(\S+\s*){1,2}$'
-  #message: "Extremely short SQL likely malformed"
-  #level: warning
-  #tags: [syntax]
+- id: with_cte
+  match: '^\s*WITH\s+'
+  message: "CTE (WITH clause) detected"
+  level: warning
+  tags: [cte, syntax]
+
+- id: upsert_syntax
+  match: '^\s*UPSERT\s+'
+  message: "UPSERT syntax (CockroachDB supports but should be reviewed)"
+  level: info
+  tags: [upsert, insert]
+
+- id: json_ops
+  match: '->|->>|::json[b]?'  # Look for JSON navigation or cast
+  message: "JSON/JSONB usage detected"
+  level: info
+  tags: [json]
+
+- id: row_values
+  match: '\(.*\).*IN\s*\('  # e.g., WHERE (a, b) IN ((1, 2))
+  message: "ROW VALUES in IN clause"
+  level: warning
+  tags: [rowvalues, comparison]
+
+- id: window_function
+  match: '\bOVER\s*\('
+  message: "Window function usage (e.g., RANK, ROW_NUMBER)"
+  level: info
+  tags: [window, analytics]
+
+- id: set_ops
+  match: '\s+(UNION|INTERSECT|EXCEPT)\s+'
+  message: "Set operation (UNION, INTERSECT, EXCEPT)"
+  level: info
+  tags: [setops]
+
+- id: case_expr
+  match: '\bCASE\b.*\bWHEN\b.*\bTHEN\b'
+  message: "CASE expression detected"
+  level: info
+  tags: [case, conditional]
+
+- id: time_interval
+  match: 'INTERVAL\s+[''\"]'
+  message: "TIME INTERVAL expression"
+  level: info
+  tags: [interval, time]
+
+- id: group_by_rollup
+  match: 'GROUP BY ROLLUP\('
+  message: "ROLLUP clause used"
+  level: warning
+  tags: [aggregation, rollup]
+
+- id: filter_clause
+  match: 'FILTER\s*\(\s*WHERE'
+  message: "FILTER clause used in aggregation"
+  level: warning
+  tags: [aggregation, filter]

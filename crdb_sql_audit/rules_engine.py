@@ -33,7 +33,11 @@ def apply_rules(sql, rules):
             logging.info(f"✅ MATCH: Rule {rule['id']} matched on SQL: {sql}")
 
             # Try to extract SQL type (optional fallback)
-            stmt_type_match = re.match(r'^\s*(SELECT|INSERT|UPDATE|DELETE|BEGIN|COMMIT|ROLLBACK|SAVEPOINT)', sql, re.IGNORECASE)
+            stmt_type_match = re.match(
+                r'^\s*(SELECT|INSERT|UPDATE|DELETE|UPSERT|WITH|BEGIN|COMMIT|ROLLBACK|SAVEPOINT|MERGE|CALL)',
+                sql,
+                re.IGNORECASE
+            )
             sql_type = stmt_type_match.group(1).upper() if stmt_type_match else rule.get("type", "OTHER")
 
             matched.append({

@@ -1,0 +1,53 @@
+- id: mysql_limit_offset
+  match: 'LIMIT\s+\d+\s*,\s*\d+'
+  message: "MySQL LIMIT offset, count is not supported; use LIMIT ... OFFSET"
+  level: warning
+  tags: [mysql, pagination]
+
+- id: mysql_if_func
+  match: '\bIF\s*\('
+  message: "MySQL IF(...) must be replaced with CASE"
+  level: warning
+  tags: [mysql, conditional]
+
+- id: mysql_backticks
+  match: '`[^`]+`'
+  message: "Backtick-quoted identifiers should use double quotes"
+  level: warning
+  tags: [mysql, identifier]
+
+- id: mysql_unsigned
+  match: '\bUNSIGNED\b'
+  message: "UNSIGNED types not supported in CockroachDB"
+  level: error
+  tags: [mysql, types]
+
+- id: mysql_enum
+  match: '\bENUM\s*\('
+  message: "ENUM should be rewritten as CHECK constraints"
+  level: warning
+  tags: [mysql, types]
+
+- id: mysql_now
+  match: '\bNOW\s*\(\)'
+  message: "NOW() is supported but may behave differently — use with care"
+  level: info
+  tags: [mysql, datetime]
+
+- id: mysql_auto_increment
+  match: '\bAUTO_INCREMENT\b'
+  message: "Use SERIAL or GENERATED AS IDENTITY instead of AUTO_INCREMENT"
+  level: error
+  tags: [mysql, identity]
+
+- id: mysql_text_blob
+  match: '\b(TEXT|BLOB)\b'
+  message: "TEXT and BLOB types must be mapped to STRING/BYTES"
+  level: warning
+  tags: [mysql, types]
+
+- id: mysql_regexp
+  match: '\bREGEXP\b'
+  message: "REGEXP should be rewritten using SIMILAR TO or ~ operator"
+  level: warning
+  tags: [mysql, expressions]

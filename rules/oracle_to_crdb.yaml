@@ -1,0 +1,47 @@
+- id: oracle_merge
+  match: '^\s*MERGE\s+INTO'
+  message: "Oracle-style MERGE statements are not supported in CockroachDB"
+  level: error
+  tags: [oracle, merge]
+
+- id: oracle_dual_table
+  match: '\s+FROM\s+DUAL\b'
+  message: "Oracle's DUAL table should be removed or rewritten"
+  level: warning
+  tags: [oracle, dual]
+
+- id: oracle_rownum
+  match: '\bROWNUM\b'
+  message: "ROWNUM is not supported; use LIMIT instead"
+  level: error
+  tags: [oracle, pagination]
+
+- id: oracle_decode
+  match: '\bDECODE\s*\('
+  message: "DECODE not supported; use CASE instead"
+  level: warning
+  tags: [oracle, conditional]
+
+- id: oracle_nvl
+  match: '\bNVL\s*\('
+  message: "NVL should be replaced with COALESCE"
+  level: info
+  tags: [oracle, null-handling]
+
+- id: oracle_number_precision
+  match: '\bNUMBER\s*(\(\d+\)|\(\d+,\d+\))?'
+  message: "NUMBER types should be mapped explicitly to INT, DECIMAL, etc."
+  level: warning
+  tags: [oracle, types]
+
+- id: oracle_sysdate
+  match: '\bSYSDATE\b'
+  message: "SYSDATE should be replaced with CURRENT_TIMESTAMP"
+  level: warning
+  tags: [oracle, datetime]
+
+- id: oracle_plsql_block
+  match: '^\s*BEGIN\s+.+END\s*;'
+  message: "PL/SQL block detected — CockroachDB does not support procedural code"
+  level: error
+  tags: [oracle, plsql]
