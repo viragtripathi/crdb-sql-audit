@@ -38,7 +38,13 @@ A powerful CLI tool to extract, deduplicate, and analyze SQL logs for **Cockroac
 
 ## 📦 Installation
 
-### Option A: Local Dev Install
+### Option A: Quick Install from PyPI
+
+```bash
+pip install crdb-sql-audit
+```
+
+### Option B: Local Dev Install
 ```bash
 git clone https://github.com/your-org/crdb-sql-audit.git
 cd crdb-sql-audit
@@ -47,7 +53,7 @@ source venv/bin/activate
 pip install .
 ```
 
-### Option B: Build via `pyproject.toml`
+### Option C: Build via `pyproject.toml`
 ```bash
 python -m build
 pip install dist/crdb_sql_audit-0.2.0-py3-none-any.whl
@@ -137,6 +143,20 @@ split -b 50M sql_only.log chunks/sql_chunk_
 ### 3. Run the Audit
 ```bash
 crdb-sql-audit --dir chunks --terms execute,pg_ --out output/report
+```
+
+### 🗜 Supported Log Formats
+
+This tool automatically supports reading:
+
+* ✅ Regular `.log` or `.txt` files
+* ✅ Compressed files: `.gz`, `.xz`
+* ✅ Folders with mixed log formats
+
+You can pass these directly using `--file` or `--dir`:
+
+```bash
+crdb-sql-audit --file logs/app.log.gz --out output/report_from_gz
 ```
 
 ## 📚 Rule Engine Format

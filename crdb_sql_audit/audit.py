@@ -2,11 +2,21 @@ import os
 import re
 import shutil
 import logging
+import gzip
+import lzma
 import importlib.resources as pkg_resources
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from .rules_engine import load_rules, apply_rules
+
+def open_log_file(path):
+    if path.endswith(".gz"):
+        return gzip.open(path, "rt", encoding="utf-8", errors="ignore")
+    elif path.endswith(".xz"):
+        return lzma.open(path, "rt", encoding="utf-8", errors="ignore")
+    else:
+        return open(path, "r", encoding="utf-8", errors="ignore")
 
 def extract_sql(logs_path, search_terms, raw_mode=False):
     seen_sql = set()
@@ -20,7 +30,7 @@ def extract_sql(logs_path, search_terms, raw_mode=False):
 
     for path in paths:
         if os.path.isfile(path):
-            with open(path, "r", encoding="utf-8", errors="ignore") as f:
+            with open_log_file(path) as f:
                 for line in f:
                     if any(term in line for term in search_terms):
                         if raw_mode:

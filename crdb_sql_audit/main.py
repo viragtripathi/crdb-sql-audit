@@ -4,7 +4,7 @@ import os
 import sys
 from crdb_sql_audit.audit import extract_sql, analyze_compatibility, generate_reports
 
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 
 logging.basicConfig(
     level=logging.INFO,

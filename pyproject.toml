@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crdb-sql-audit"
-version = "0.2.6"
-description = "Analyze PostgreSQL SQL logs for CockroachDB compatibility"
+version = "0.2.7"
+description = "Analyze SQL logs for CockroachDB compatibility"
 authors = [
     { name = "Virag Tripathi", email = "virag.tripathi@gmail.com" }
 ]
