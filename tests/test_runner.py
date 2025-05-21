@@ -9,7 +9,7 @@ def run_test():
     subprocess.run([
         "crdb-sql-audit",
         "--dir", "tests/sample_logs",
-        "--terms", "execute,pg_",
+        "--filters", "execute,pg_",
         "--rules", "tests/rules/test_rules.yaml",
         "--out", test_output
     ], check=True)
