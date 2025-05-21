@@ -4,16 +4,22 @@ import os
 import sys
 from crdb_sql_audit.audit import extract_sql, analyze_compatibility, generate_reports
 
-__version__ = "0.2.7"
+__version__ = "0.2.8"
+
+if "--debug" in sys.argv:
+    log_level = logging.DEBUG
+else:
+    log_level = logging.INFO
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=log_level,
     format='[%(asctime)s] %(levelname)s: %(message)s',
     handlers=[
         logging.FileHandler("crdb_sql_audit.log", mode='w'),
         logging.StreamHandler()
     ]
 )
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -24,10 +30,11 @@ def main():
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("--dir", help="Directory containing SQL log files")
     parser.add_argument("--file", help="Single SQL log file")
-    parser.add_argument("--terms", default="execute,pg_", help="Comma-separated search keywords to extract SQL (default: 'execute,pg_')")
+    parser.add_argument("--filters", default=None, help="Comma-separated keywords to filter log lines (default: 'LOG:  execute', 'pg_', 'LOG:  statement:')")
     parser.add_argument("--raw", action="store_true", help="Treat each matching line as raw SQL (skip extraction)")
     parser.add_argument("--out", default="crdb_audit_output/report", help="Output prefix for reports")
     parser.add_argument("--rules", required=False, help="Path to YAML rules file (defaults to Postgres rules)")
+    parser.add_argument("--debug", action="store_true", help="Enable debug-level logging")
     args = parser.parse_args()
 
     if not args.dir and not args.file:
@@ -40,7 +47,7 @@ def main():
     if args.file and not os.path.isfile(args.file):
         parser.error(f"--file expects a file. Got: {args.file}")
 
-    search_terms = [t.strip() for t in args.terms.split(",")]
+    search_terms = [t.strip() for t in args.filters.split(",")] if args.filters else None
     logs_path = args.dir if args.dir else args.file
     seen_sql = extract_sql(logs_path, search_terms, raw_mode=args.raw)
     issues = analyze_compatibility(seen_sql, rules_path=args.rules)
@@ -62,6 +69,7 @@ def main():
             logging.info(f"   ▶ {sql}")
 
     generate_reports(seen_sql, issues, args.out)
+
 
 if __name__ == "__main__":
     main()

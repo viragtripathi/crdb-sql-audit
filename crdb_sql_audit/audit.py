@@ -9,6 +9,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from .rules_engine import load_rules, apply_rules
+from collections import Counter
+
 
 def open_log_file(path):
     if path.endswith(".gz"):
@@ -18,8 +20,17 @@ def open_log_file(path):
     else:
         return open(path, "r", encoding="utf-8", errors="ignore")
 
-def extract_sql(logs_path, search_terms, raw_mode=False):
+
+def extract_sql(logs_path, line_filters=None, raw_mode=False):
+    if line_filters is None:
+        line_filters = ["LOG:  execute", "pg_", "LOG:  statement:"]
+        logging.info("🔍 No line filters provided. Using default: ['LOG:  execute', 'pg_', 'LOG:  statement:']")
+    else:
+        logging.info(f"🔍 Line filters used: {line_filters}")
+
     seen_sql = set()
+    structured_hits = 0
+    raw_hits = 0
 
     if os.path.isfile(logs_path):
         paths = [logs_path]
@@ -32,21 +43,61 @@ def extract_sql(logs_path, search_terms, raw_mode=False):
         if os.path.isfile(path):
             with open_log_file(path) as f:
                 for line in f:
-                    if any(term in line for term in search_terms):
-                        if raw_mode:
-                            sql = line.strip()
-                            if len(sql) > 5:
-                                seen_sql.add(sql)
-                        else:
-                            match = re.search(r'execute [^:]+: (.+)', line)
-                            if match:
-                                sql = match.group(1).strip()
-                                seen_sql.add(sql)
+                    if any(term in line for term in line_filters):
+                        logging.debug(f"🧲 Line matched filter: {line.strip()}")
+                        sql = extract_raw_sql(line) if raw_mode else extract_structured_sql(line, line_filters=line_filters)
+                        if sql:
+                            seen_sql.add(sql)
+                            if raw_mode:
+                                raw_hits += 1
                             else:
-                                func_match = re.findall(r'\b(pg_\w+\s*\(.*?\))', line)
-                                for func in func_match:
-                                    seen_sql.add(func.strip())
+                                structured_hits += 1
+    logging.info(f"✅ Total SQL statements extracted: {len(seen_sql)}")
+    logging.info(f"📊 Raw mode matches: {raw_hits}")
+    logging.info(f"📊 Structured matches: {structured_hits}")
+
+    sql_type_counts = Counter(issue['SQL_Type'] for issue in analyze_compatibility(seen_sql))
+    for sql_type, count in sql_type_counts.items():
+        logging.info(f"📈 SQL Type: {sql_type} — {count} matches")
+
+    sql_type_counts = Counter(issue['SQL_Type'] for issue in analyze_compatibility(seen_sql))
+    for sql_type, count in sql_type_counts.items():
+        logging.info(f"📈 SQL Type: {sql_type} — {count} matches")
+
     return seen_sql
+
+
+def extract_raw_sql(line):
+    logging.debug(f"📝 Checking raw line: {line.strip()}")
+    sql = line.strip()
+    return sql if len(sql) > 5 else None
+
+
+def extract_structured_sql(line, line_filters=None):
+    logging.debug(f"🔍 Checking structured line: {line.strip()}")
+
+    # If user provided custom filters, use those to extract SQL
+    if line_filters:
+        for filter_term in line_filters:
+            if filter_term in line:
+                sql = line.split(filter_term, 1)[-1].strip()
+                logging.debug(f"📤 Extracted via user filter '{filter_term}': {sql}")
+                return sql
+
+    # Fallback to default patterns
+    match = re.search(r'execute [^:]+: (.+)', line)
+    if not match:
+        match = re.search(r'LOG:\s*statement:\s*(.+)', line)
+    if match:
+        return match.group(1).strip()
+
+    # Fallback for pg_ built-ins
+    func_match = re.findall(r'\b(pg_\w+\s*\(.*?\))', line)
+    if func_match:
+        logging.debug(f"✅ Matched pg_ function: {func_match[0].strip()}")
+        return func_match[0].strip()
+
+    return None
 
 
 def analyze_compatibility(seen_sql, rules_path=None):
@@ -183,7 +234,7 @@ pre {
         for i, row in enumerate(issues[:10]):
             f.write(f"<h3>{i+1}. {row['SQL_Type']}: {row['Issue']}</h3><pre>{row['Example']}</pre>")
         f.write("<h2>All Compatibility Issues</h2><table id='issues' class='display'><thead><tr><th>SQL Type</th><th>Issue</th><th>Example</th></tr></thead><tbody>")
-        for row in issues:
+        for row in issues[:5000]:
             f.write(f"<tr><td>{row['SQL_Type']}</td><td>{row['Issue']}</td><td><code>{row['Example']}</code></td></tr>")
         f.write("</tbody></table><script>$(document).ready(()=>$('#issues').DataTable());</script></body></html>")
 

@@ -64,7 +64,7 @@ pip install dist/crdb_sql_audit-0.2.0-py3-none-any.whl
 ```bash
 crdb-sql-audit \
   --dir /path/to/logs \
-  --terms execute,pg_ \
+  --filters execute,pg_ \
   --out output/report
 ```
 
@@ -73,7 +73,7 @@ You can also analyze a single file:
 ```bash
 crdb-sql-audit \
   --file /path/to/logfile.log \
-  --terms SELECT,INSERT \
+  --filters SELECT,INSERT \
   --raw \
   --out output/single_file_report
 ```
@@ -85,10 +85,11 @@ crdb-sql-audit \
 ```bash
 --dir       Directory containing SQL log files (mutually exclusive with --file)
 --file      Single SQL log file (mutually exclusive with --dir)
---terms     Comma-separated search keywords to extract SQL (default: 'execute,pg_')
+--filters     Comma-separated search keywords to extract SQL (default: 'LOG:  execute', 'pg_', 'LOG:  statement:')
 --raw       Treat each matching line as a raw SQL statement (default: False)
 --rules     Path to YAML rules file (optional, default: built-in PostgreSQL rules)
 --out       Output file prefix (default: crdb_audit_output/report)
+--debug     Enable debug-level logging
 --help      Show usage help
 --version   Show current version
 ```
@@ -106,7 +107,7 @@ crdb-sql-audit --help
 ```bash
 crdb-sql-audit \
   --dir ./logs \
-  --terms execute,pg_ \
+  --filters execute,pg_ \
   --rules ./rules/mysql_to_crdb.yaml \
   --out output/mysql_report
 ```
@@ -142,7 +143,7 @@ split -b 50M sql_only.log chunks/sql_chunk_
 
 ### 3. Run the Audit
 ```bash
-crdb-sql-audit --dir chunks --terms execute,pg_ --out output/report
+crdb-sql-audit --dir chunks --filters execute,pg_ --out output/report
 ```
 
 ### 🗜 Supported Log Formats
@@ -158,6 +159,18 @@ You can pass these directly using `--file` or `--dir`:
 ```bash
 crdb-sql-audit --file logs/app.log.gz --out output/report_from_gz
 ```
+
+### 🧪 Raw Mode vs. Filtered Mode
+
+This tool supports two modes of SQL log analysis:
+
+| Mode                  | Behavior                                                                |
+|-----------------------|-------------------------------------------------------------------------|
+| `--filters` (default) | Filters log lines using keywords like `LOG:  execute`, `pg_`, etc.      |
+| `--raw`               | Analyzes every line as a potential SQL statement — no filtering applied |
+
+> ✅ Use `--raw` if you want the most complete coverage, especially for mixed-format or unknown logs.
+> ⚠️ Warning: large logs + `--raw` + `--debug` may generate gigabytes of audit output.
 
 ## 📚 Rule Engine Format
 
