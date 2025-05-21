@@ -289,6 +289,26 @@ You can use basic Unix commands to check for patterns like pg_ functions directl
 | Count occurrences of each function | `grep -oE '\bpg_[a-zA-Z0-9_]+\(' chunks/* \| sort \| uniq -c \| sort -nr` |
 | Full SQL lines containing pg\_\*   | `grep -E '\bpg_[a-zA-Z0-9_]+\(' chunks/*`                                 |
 
+ALso, before or after running `crdb-sql-audit`, you can inspect your logs to see how often common filters appear.
+
+For example, to count usage of PostgreSQL built-ins and log patterns:
+
+```bash
+{
+  echo "🔍 pg_* function usage:"
+  grep -oE '\bpg_[a-zA-Z0-9_]+\(' chunks/* | sort | uniq -c | sort -nr
+  echo ""
+  echo "🔍 PostgreSQL LOG prefixes:"
+  grep -oE 'LOG:  execute|LOG:  statement:|LOG:  duration:' chunks/* | sort | uniq -c | sort -nr
+}
+````
+
+This will show counts of:
+
+* Each `pg_` function used (e.g. `pg_backend_pid(`)
+* Number of log lines using `LOG:  execute`, `LOG:  statement:`, and `LOG:  duration:`
+
+> ✅ Useful for checking whether your filters (`--filters`) are likely to match anything in the input.
 
 ---
 
